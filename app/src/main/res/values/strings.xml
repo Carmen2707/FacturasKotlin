@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">Facturas</string>
+    <string name="titulo">Facturas</string>
+    <string name="tituloPaginaFiltros">Filtrar facturas</string>
+    <string name="diaMesAño">dia/mes/año</string>
+    <string name="desde">Desde:</string>
+    <string name="hasta">Hasta:</string>
+    <string name="tituloFecha">Con fecha de emisión</string>
+    <string name="tituloEstado">Por estado</string>
+    <string name="checkCuota">Cuota Fija</string>
+    <string name="checkPagadas">Pagadas</string>
+    <string name="tituloImporte">Por un importe</string>
+    <string name="minimo">0€</string>
+    <string name="checkPendientes">Pendientes de pago</string>
+    <string name="checkPlan">Plan de pago</string>
+    <string name="checkAnuladas">Anuladas</string>
+    <string name="botonAplicar">APLICAR</string>
+    <string name="botonEliminar">ELIMINAR FILTROS</string>
+    <string name="mensajeNoHayFacturas">No hay ninguna factura con estas características.</string>
+    <!-- popup -->
+    <string name="tituloPopup">Información</string>
+    <string name="mensajePopup">Esta funcionalidad aún no está disponible</string>
+    <string name="botonCerrarPopup">CERRAR</string>
+    <string name="flecha">flecha</string>
+    <string name="euro">€</string>
+</resources>
