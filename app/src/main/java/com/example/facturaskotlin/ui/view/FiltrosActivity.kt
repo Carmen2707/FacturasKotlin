@@ -41,8 +41,8 @@ class FiltrosActivity : AppCompatActivity() {
         supportActionBar?.title = "Filtrar facturas"
         iniciarComponentes()
         iniciarBotonesFechas()
-        iniciarSeekbar()
         iniciarBotonAplicar()
+        iniciarSeekbar()
         iniciarBotonEliminarFiltros()
 
 
@@ -53,7 +53,7 @@ class FiltrosActivity : AppCompatActivity() {
         val gson = Gson()
         val filterJson = gson.toJson(filtro)
 
-        prefs.edit().putString("FILTER_STATE", filterJson).apply()
+        prefs.edit().putString("FILTER_STATE", filterJson).putInt("SEEKBAR_PROGRESS", seekBar.progress).apply()
     }
 
     private fun aplicarFiltrosGuardados() {
@@ -64,12 +64,13 @@ class FiltrosActivity : AppCompatActivity() {
             val gson = Gson()
             filtro = gson.fromJson(filterJson, Filtro::class.java)
             filtro?.let { nonNullFilter ->
-                loadFilters(nonNullFilter)
+                cargarFiltros(nonNullFilter)
             }
+
         }
     }
 
-    private fun loadFilters(filtro: Filtro) {
+    private fun cargarFiltros(filtro: Filtro) {
         binding.fechaDesde.text = filtro.fechaDesde
         binding.fechaHasta.text = filtro.fechaHasta
         binding.seekBar.progress=filtro.importe.toInt()
@@ -98,12 +99,31 @@ class FiltrosActivity : AppCompatActivity() {
             val gson = Gson()
             filtro = gson.fromJson(filterJson, Filtro::class.java)
             filtro?.let { nonNullFilter ->
-                loadFilters(nonNullFilter)
+                cargarFiltros(nonNullFilter)
             }
         }
 
-        val gson = Gson()
+    }
 
+    private fun iniciarBotonEliminarFiltros() {
+        //boton para resetear los filtros
+        botonEliminar.setOnClickListener {
+            botonDesde.text = getString(R.string.diaMesAño)
+            botonHasta.text = getString(R.string.diaMesAño)
+            central.text = "1€"
+            binding.maximo.text = getString(R.string.importe_formato,seekBar.max)
+            seekBar.progress = 1
+            checkPagadas.isChecked = false
+            checkAnuladas.isChecked = false
+            checkCuota.isChecked = false
+            checkPendientes.isChecked = false
+            checkPlan.isChecked = false
+        }
+    }
+
+    private fun iniciarBotonAplicar() {
+        //boton aplicar
+        val gson = Gson()
         val botonAplicar = binding.botonAplicar
         botonAplicar.setOnClickListener {
             actualizarFiltros()
@@ -117,33 +137,14 @@ class FiltrosActivity : AppCompatActivity() {
             val valorDesde = botonDesde.text.toString()
             val valorHasta = botonHasta.text.toString()
             val centralText = binding.central.text.toString().replace("€", "")
-              val central: Double = centralText.toDouble()
+            val central: Double = centralText.toDouble()
+            Log.d("central",central.toString())
             val filtroEnviar = Filtro(valorDesde, valorHasta, central, estado)
             val intent = Intent(this, MainActivity::class.java)
             intent.putExtra("filtro", gson.toJson(filtroEnviar))
             startActivity(intent)
+
         }
-    }
-
-    private fun iniciarBotonEliminarFiltros() {
-        //boton para eliminar los filtros
-
-        botonEliminar.setOnClickListener {
-            botonDesde.text = getString(R.string.diaMesAño)
-            botonHasta.text = getString(R.string.diaMesAño)
-            central.text = "1€"
-            binding.maximo.text = String.format("%d€", seekBar.max)
-            seekBar.progress = 1
-            checkPagadas.isChecked = false
-            checkAnuladas.isChecked = false
-            checkCuota.isChecked = false
-            checkPendientes.isChecked = false
-            checkPlan.isChecked = false
-        }
-    }
-
-    private fun iniciarBotonAplicar() {
-        //boton aplicar
 
     }
 
@@ -168,18 +169,18 @@ class FiltrosActivity : AppCompatActivity() {
 
     private fun iniciarSeekbar() {
         //iniciar el slider para el importe
-        val maxImporteInicial=intent.getDoubleExtra("maxImporteInicial",0.0).toInt()+1
-         maxImporte = intent.getDoubleExtra("maxImporte", 0.0).toInt()
+         maxImporte = intent.getDoubleExtra("maxImporte", 0.0).toInt()+1
 Log.d("ff",maxImporte.toString())
 
-        seekBar.max = maxImporteInicial
-        seekBar.progress = maxImporte
-        binding.maximo.text = "${maxImporteInicial}€"
-        central.text = "${maxImporte}€"
+        aplicarFiltrosGuardados()
+        seekBar.max=maxImporte
+        seekBar.progress = filtro?.importe?.toInt() ?: maxImporte
+        binding.maximo.text = getString(R.string.importe_formato,maxImporte)
+        central.text = getString(R.string.importe_formato, seekBar.progress)
 
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                central.text = String.format("%d€", progress)
+                central.text = getString(R.string.importe_formato, progress)
             }
 
 

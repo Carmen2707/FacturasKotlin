@@ -17,6 +17,8 @@
     <string name="botonAplicar">APLICAR</string>
     <string name="botonEliminar">ELIMINAR FILTROS</string>
     <string name="mensajeNoHayFacturas">No hay ninguna factura con estas características.</string>
+
+    <string name="importe_formato">%d€</string>
     <!-- popup -->
     <string name="tituloPopup">Información</string>
     <string name="mensajePopup">Esta funcionalidad aún no está disponible</string>

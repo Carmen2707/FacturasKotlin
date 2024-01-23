@@ -28,8 +28,8 @@ import java.util.Locale
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var adapterFactura: FacturasAdapter
-    private var filter: Filtro? = null
-    private var maxImporteInicial: Double = 0.0
+    private var objFiltro: Filtro? = null
+    private var maxImporte: Double = 0.0
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
         val viewModel = ViewModelProvider(this).get(FacturaViewModel::class.java)
         viewModel.getAllRepositoryList().observe(this, Observer<List<Factura>> {
             val listaFacturas = obtenerListaGuardada()
-            if (listaFacturas == null || listaFacturas.isEmpty()) {
+            if (listaFacturas.isNullOrEmpty()) {
                 adapterFactura.setLista(it)
             } else {
                 adapterFactura.setLista(listaFacturas)
@@ -69,49 +69,35 @@ class MainActivity : AppCompatActivity() {
 
             val filtro = intent.getStringExtra("filtro")
             if (filtro != null) {
-                val filter = Gson().fromJson(filtro, Filtro::class.java)
+                objFiltro= Gson().fromJson(filtro, Filtro::class.java)
                 var listaFiltrada = it
-                filter?.let { filter ->
-                    listaFiltrada = filtrarPorFecha(filter.fechaDesde, filter.fechaHasta, listaFiltrada)
-                    listaFiltrada = filtrarPorImporte(filter.importe, listaFiltrada)
-                    listaFiltrada = filtrarPorEstado(filter.mapCheckBox, listaFiltrada)
+                objFiltro?.let { filtro1 ->
+                    listaFiltrada = filtrarPorFecha(filtro1.fechaDesde, filtro1.fechaHasta, listaFiltrada)
+                    listaFiltrada = filtrarPorImporte(filtro1.importe, listaFiltrada)
+                    listaFiltrada = filtrarPorEstado(filtro1.mapCheckBox, listaFiltrada)
                     Log.d("lista filtrada", listaFiltrada.toString())
 
                     guardarFiltro(listaFiltrada)
                     adapterFactura.setLista(listaFiltrada)
-                    Log.d("FILTRO2", filter.toString())
-                
                 }
 
                 if (listaFiltrada.isEmpty()) {
                     val mensaje = Dialog(this)
-                    mensaje.setContentView(R.layout.activity_lista_vacia2)
+                    mensaje.setContentView(R.layout.activity_lista_vacia)
                     mensaje.show()
                     //boton para cerrar el popup
                     val cerrarVentana = mensaje.findViewById<Button>(R.id.cerrarVentana)
                     cerrarVentana.setOnClickListener {
                         mensaje.dismiss()
                        val intent = Intent(this, FiltrosActivity::class.java)
-                       /* val gson = Gson()
-                        val filtroEnviar = Filtro(
-                            filter.fechaDesde,
-                            filter.fechaHasta,
-                            filter.importe,
-                            filter.mapCheckBox
-                        )*/
-                        intent.putExtra("maxImporte", filter.importe)
-                        intent.putExtra("maxImporteInicial",maxImporteInicial)
-                        Log.d("inicial",maxImporteInicial.toString())
-                       // intent.putExtra("filtro", gson.toJson(filtroEnviar))
-                        Log.d("hoala",filter.importe.toString())
+
+                       intent.putExtra("maxImporte",maxImporte)
                         startActivity(intent)
                     }
                 }
 
             }
-
-
-            maxImporteInicial = calcularMaximoImporte(it)
+            maxImporte = calcularMaximoImporte(it)
 
         })
 
@@ -135,8 +121,6 @@ class MainActivity : AppCompatActivity() {
             gson.fromJson(filteredListJson, type)
         } else {
             null
-
-
         }
     }
 
@@ -247,8 +231,11 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.menu_filtro -> {
                 val intent = Intent(this, FiltrosActivity::class.java)
-                intent.putExtra("maxImporteInicial", maxImporteInicial)
-
+                intent.putExtra("maxImporte", maxImporte)
+                if (objFiltro != null) {
+                    val gson=Gson()
+                    intent.putExtra("filtro", gson.toJson(objFiltro))
+                }
                 startActivity(intent)
                 true
             }
