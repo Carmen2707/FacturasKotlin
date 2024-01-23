@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.facturaskotlin.R
+import com.example.facturaskotlin.constantes.Constantes
 import com.example.facturaskotlin.database.Factura
 import com.example.facturaskotlin.databinding.ActivityMainBinding
 import com.example.facturaskotlin.ui.view.adapter.FacturasAdapter
@@ -42,8 +43,7 @@ class MainActivity : AppCompatActivity() {
 
         //cambiar el titulo de la toolbar
         setSupportActionBar(binding.included.toolbar)
-        supportActionBar?.title = "Facturas"
-
+        supportActionBar?.title = getString(R.string.app_name)
         iniciarView()
         iniciarMainViewModel()
 
@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
 
             }
 
-            val filtro = intent.getStringExtra("filtro")
+            val filtro = intent.getStringExtra(Constantes.FILTRO_ENVIADO)
             if (filtro != null) {
                 objFiltro= Gson().fromJson(filtro, Filtro::class.java)
                 var listaFiltrada = it
@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity() {
                         mensaje.dismiss()
                        val intent = Intent(this, FiltrosActivity::class.java)
 
-                       intent.putExtra("maxImporte",maxImporte)
+                       intent.putExtra(Constantes.MAX_IMPORTE,maxImporte)
                         startActivity(intent)
                     }
                 }
@@ -139,20 +139,20 @@ class MainActivity : AppCompatActivity() {
         listaFiltrada: List<Factura>
     ): List<Factura> {
         val listaEstado = mutableListOf<Factura>()
-        val estadoPagadas = mapCheckBox.getValue("Pagada")
-        val estadoAnuladas = mapCheckBox.getValue("Anulada")
-        val estadoCuota = mapCheckBox.getValue("Cuota fija")
-        val estadoPendientes = mapCheckBox.getValue("Pendiente de pago")
-        val estadoPlan = mapCheckBox.getValue("Plan de pago")
+        val estadoPagadas = mapCheckBox.getValue(Constantes.PAGADAS)
+        val estadoAnuladas = mapCheckBox.getValue(Constantes.ANULADAS)
+        val estadoCuota = mapCheckBox.getValue(Constantes.CUOTA_FIJA)
+        val estadoPendientes = mapCheckBox.getValue(Constantes.PENDIENTE_PAGO)
+        val estadoPlan = mapCheckBox.getValue(Constantes.PLAN_PAGO)
         if (!estadoPagadas && !estadoAnuladas && !estadoCuota && !estadoPendientes && !estadoPlan) {
             return listaFiltrada
         }
         for (factura in listaFiltrada) {
-            val checkeadoPagada = factura.estado == "Pagada"
-            val checkeadoAnulada = factura.estado == "Anulada"
-            val checkeadoCuota = factura.estado == "Cuota fija"
-            val checkeadoPendientes = factura.estado == "Pendiente de pago"
-            val checkeadoPlan = factura.estado == "Plan de pago"
+            val checkeadoPagada = factura.estado == Constantes.PAGADAS
+            val checkeadoAnulada = factura.estado == Constantes.ANULADAS
+            val checkeadoCuota = factura.estado == Constantes.CUOTA_FIJA
+            val checkeadoPendientes = factura.estado == Constantes.PENDIENTE_PAGO
+            val checkeadoPlan = factura.estado == Constantes.PLAN_PAGO
 
             if ((checkeadoPagada && estadoPagadas) || (checkeadoAnulada && estadoAnuladas) || (checkeadoCuota && estadoCuota) || (checkeadoPendientes && estadoPendientes) || (checkeadoPlan && estadoPlan)) {
                 listaEstado.add(factura)
@@ -231,10 +231,10 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.menu_filtro -> {
                 val intent = Intent(this, FiltrosActivity::class.java)
-                intent.putExtra("maxImporte", maxImporte)
+                intent.putExtra(Constantes.MAX_IMPORTE, maxImporte)
                 if (objFiltro != null) {
                     val gson=Gson()
-                    intent.putExtra("filtro", gson.toJson(objFiltro))
+                    intent.putExtra(Constantes.FILTRO_ENVIADO, gson.toJson(objFiltro))
                 }
                 startActivity(intent)
                 true

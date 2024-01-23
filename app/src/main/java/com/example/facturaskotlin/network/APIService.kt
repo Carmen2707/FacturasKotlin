@@ -5,6 +5,6 @@ import retrofit2.Call
 import retrofit2.http.GET
 
 interface APIService {
-    @GET("facturas") //tipo de llamada
+    @GET("facturas")
     fun getFacturas(): Call<FacturaStructureResponse>
 }

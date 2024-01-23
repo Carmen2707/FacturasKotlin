@@ -12,6 +12,7 @@ import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.facturaskotlin.R
+import com.example.facturaskotlin.constantes.Constantes
 import com.example.facturaskotlin.databinding.ActivityFiltrosBinding
 import com.google.gson.Gson
 import java.util.Calendar
@@ -38,7 +39,7 @@ class FiltrosActivity : AppCompatActivity() {
 
         //cambiar el titulo de la toolbar
         setSupportActionBar(binding.included.toolbar)
-        supportActionBar?.title = "Filtrar facturas"
+        supportActionBar?.title = getString(R.string.tituloPaginaFiltros)
         iniciarComponentes()
         iniciarBotonesFechas()
         iniciarBotonAplicar()
@@ -74,11 +75,11 @@ class FiltrosActivity : AppCompatActivity() {
         binding.fechaDesde.text = filtro.fechaDesde
         binding.fechaHasta.text = filtro.fechaHasta
         binding.seekBar.progress=filtro.importe.toInt()
-        binding.checkPagadas.isChecked = filtro.mapCheckBox["Pagada"] ?: false
-        binding.checkAnuladas.isChecked = filtro.mapCheckBox["Anulada"] ?: false
-        binding.checkCuota.isChecked = filtro.mapCheckBox["Cuota fija"] ?: false
-        binding.checkPendientes.isChecked = filtro.mapCheckBox["Pendiente de pago"] ?: false
-        binding.checkPlan.isChecked = filtro.mapCheckBox["Plan de pago"] ?: false
+        binding.checkPagadas.isChecked = filtro.mapCheckBox[Constantes.PAGADAS] ?: false
+        binding.checkAnuladas.isChecked = filtro.mapCheckBox[Constantes.ANULADAS] ?: false
+        binding.checkCuota.isChecked = filtro.mapCheckBox[Constantes.CUOTA_FIJA] ?: false
+        binding.checkPendientes.isChecked = filtro.mapCheckBox[Constantes.PENDIENTE_PAGO] ?: false
+        binding.checkPlan.isChecked = filtro.mapCheckBox[Constantes.PLAN_PAGO] ?: false
     }
 
     private fun iniciarComponentes() {
@@ -94,10 +95,10 @@ class FiltrosActivity : AppCompatActivity() {
         checkCuota = binding.checkCuota
         checkPlan = binding.checkPlan
         aplicarFiltrosGuardados()
-        val filterJson = intent.getStringExtra("filtro")
-        if (filterJson != null) {
+        val filtrar = intent.getStringExtra(Constantes.FILTRO_ENVIADO)
+        if (filtrar != null) {
             val gson = Gson()
-            filtro = gson.fromJson(filterJson, Filtro::class.java)
+            filtro = gson.fromJson(filtrar, Filtro::class.java)
             filtro?.let { nonNullFilter ->
                 cargarFiltros(nonNullFilter)
             }
@@ -128,20 +129,20 @@ class FiltrosActivity : AppCompatActivity() {
         botonAplicar.setOnClickListener {
             actualizarFiltros()
             val estado = hashMapOf(
-                "Pagada" to checkPagadas.isChecked,
-                "Anulada" to checkAnuladas.isChecked,
-                "Cuota fija" to checkCuota.isChecked,
-                "Pendiente de pago" to checkPendientes.isChecked,
-                "Plan de pago" to checkPlan.isChecked
+                Constantes.PAGADAS to checkPagadas.isChecked,
+                Constantes.ANULADAS to checkAnuladas.isChecked,
+                Constantes.CUOTA_FIJA to checkCuota.isChecked,
+                Constantes.PENDIENTE_PAGO to checkPendientes.isChecked,
+                Constantes.PLAN_PAGO to checkPlan.isChecked
             )
             val valorDesde = botonDesde.text.toString()
             val valorHasta = botonHasta.text.toString()
             val centralText = binding.central.text.toString().replace("€", "")
             val central: Double = centralText.toDouble()
-            Log.d("central",central.toString())
+
             val filtroEnviar = Filtro(valorDesde, valorHasta, central, estado)
             val intent = Intent(this, MainActivity::class.java)
-            intent.putExtra("filtro", gson.toJson(filtroEnviar))
+            intent.putExtra(Constantes.FILTRO_ENVIADO, gson.toJson(filtroEnviar))
             startActivity(intent)
 
         }
@@ -151,11 +152,11 @@ class FiltrosActivity : AppCompatActivity() {
     private fun actualizarFiltros() {
 
         val estado = hashMapOf(
-            "Pagada" to checkPagadas.isChecked,
-            "Anulada" to checkAnuladas.isChecked,
-            "Cuota fija" to checkCuota.isChecked,
-            "Pendiente de pago" to checkPendientes.isChecked,
-            "Plan de pago" to checkPlan.isChecked
+            Constantes.PAGADAS to checkPagadas.isChecked,
+            Constantes.ANULADAS to checkAnuladas.isChecked,
+            Constantes.CUOTA_FIJA to checkCuota.isChecked,
+            Constantes.PENDIENTE_PAGO to checkPendientes.isChecked,
+            Constantes.PLAN_PAGO to checkPlan.isChecked
         )
         val valorDesde = botonDesde.text.toString()
         val valorHasta = botonHasta.text.toString()
@@ -169,7 +170,7 @@ class FiltrosActivity : AppCompatActivity() {
 
     private fun iniciarSeekbar() {
         //iniciar el slider para el importe
-         maxImporte = intent.getDoubleExtra("maxImporte", 0.0).toInt()+1
+         maxImporte = intent.getDoubleExtra(Constantes.MAX_IMPORTE, 0.0).toInt()+1
 Log.d("ff",maxImporte.toString())
 
         aplicarFiltrosGuardados()

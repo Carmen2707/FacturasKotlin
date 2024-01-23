@@ -6,7 +6,4 @@ class Filtro(
     val fechaHasta: String,
     val importe: Double,
     val mapCheckBox: HashMap<String, Boolean>
-) {
-
-
-}
+)

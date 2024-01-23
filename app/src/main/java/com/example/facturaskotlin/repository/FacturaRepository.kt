@@ -44,13 +44,11 @@ class FacturaRepository @Inject constructor(
                         )
                     }
                 } else {
-                    // Manejo de errores en la respuesta
                     showError()
                 }
             }
 
             override fun onFailure(call: Call<FacturaStructureResponse>, t: Throwable) {
-                // Manejo de errores en la solicitud
                 showError()
             }
 

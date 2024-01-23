@@ -17,7 +17,7 @@ abstract class FacturaDB : RoomDatabase() {
                 DB_INSTANCE = Room.databaseBuilder(
                     context.applicationContext,
                     FacturaDB::class.java,
-                    "invoice_database"
+                    "facturas_database"
                 )
                     .allowMainThreadQueries()
                     .build()
