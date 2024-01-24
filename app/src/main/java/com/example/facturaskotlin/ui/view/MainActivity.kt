@@ -25,6 +25,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+/**
+ * La clase MainActivity es la actividad principal que muestra la lista de facturas.
+ */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -38,21 +41,38 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        adapterFactura = FacturasAdapter() { factura -> onItemSelected(factura) }
-
+        adapterFactura = FacturasAdapter { factura -> onItemSelected(factura) }
 
         //cambiar el titulo de la toolbar
         setSupportActionBar(binding.included.toolbar)
         supportActionBar?.title = getString(R.string.app_name)
         iniciarView()
         iniciarMainViewModel()
-
-
     }
 
+    /**
+     * Inicializa la vista del RecyclerView y configura el adaptador.
+     */
+    private fun iniciarView() {
+        binding.rvFacturas.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapterFactura = FacturasAdapter() { factura ->
+                onItemSelected(factura)
+            }
+            adapter = adapterFactura
+        }
+    }
+
+    /**
+     * Inicializar el ViewModel y observar cambios en la lista de facturas.
+     *     // Aplicar filtros si se proporcionan al iniciar la actividad.
+     */
     private fun iniciarMainViewModel() {
         val viewModel = ViewModelProvider(this).get(FacturaViewModel::class.java)
+        //Cualquier cambio en la lista activará el Observer.
         viewModel.getAllRepositoryList().observe(this, Observer<List<Factura>> {
+
+            // Obtiene la lista de facturas almacenada y actuliza el adaptador.
             val listaFacturas = obtenerListaGuardada()
             if (listaFacturas.isNullOrEmpty()) {
                 adapterFactura.setLista(it)
@@ -61,59 +81,58 @@ class MainActivity : AppCompatActivity() {
             }
             adapterFactura.notifyDataSetChanged()
 
-
+            // Si la lista del ViewModel está vacía, realiza una llamada a la API para obtener nuevas facturas.
             if (it.isEmpty()) {
                 viewModel.makeApiCall()
-
             }
 
             val filtro = intent.getStringExtra(Constantes.FILTRO_ENVIADO)
             if (filtro != null) {
                 objFiltro= Gson().fromJson(filtro, Filtro::class.java)
                 var listaFiltrada = it
+
+                // Aplica los filtros a la lista actual.
                 objFiltro?.let { filtro1 ->
                     listaFiltrada = filtrarPorFecha(filtro1.fechaDesde, filtro1.fechaHasta, listaFiltrada)
                     listaFiltrada = filtrarPorImporte(filtro1.importe, listaFiltrada)
                     listaFiltrada = filtrarPorEstado(filtro1.mapCheckBox, listaFiltrada)
-                    Log.d("lista filtrada", listaFiltrada.toString())
 
+                    //Guarda la lista filtrada en las shared preferences.
                     guardarFiltro(listaFiltrada)
                     adapterFactura.setLista(listaFiltrada)
                 }
 
+                // Si no hay ninguna factura con las características del filtro (la lista filtrada esta vacía), muestra un diálogo informando al usuario.
                 if (listaFiltrada.isEmpty()) {
                     val mensaje = Dialog(this)
                     mensaje.setContentView(R.layout.activity_lista_vacia)
                     mensaje.show()
+
                     //boton para cerrar el popup
                     val cerrarVentana = mensaje.findViewById<Button>(R.id.cerrarVentana)
                     cerrarVentana.setOnClickListener {
                         mensaje.dismiss()
                        val intent = Intent(this, FiltrosActivity::class.java)
-
                        intent.putExtra(Constantes.MAX_IMPORTE,maxImporte)
                         startActivity(intent)
                     }
                 }
-
             }
             maxImporte = calcularMaximoImporte(it)
-
         })
-
     }
+
 
     private fun guardarFiltro(listaFiltrada: List<Factura>) {
         val gson = Gson()
         val filteredListJson = gson.toJson(listaFiltrada)
-
-        val prefs: SharedPreferences = getPreferences(MODE_PRIVATE)
-        prefs.edit().putString("FILTERED_LIST", filteredListJson).apply()
+        val preferences = getPreferences(MODE_PRIVATE)
+        preferences.edit().putString("LISTA_FILTRADA", filteredListJson).apply()
     }
 
     private fun obtenerListaGuardada(): List<Factura>? {
-        val prefs: SharedPreferences = getPreferences(MODE_PRIVATE)
-        val filteredListJson: String? = prefs.getString("FILTERED_LIST", null)
+        val preferences= getPreferences(MODE_PRIVATE)
+        val filteredListJson = preferences.getString("LISTA_FILTRADA", null)
 
         return if (filteredListJson != null) {
             val gson = Gson()
@@ -121,16 +140,6 @@ class MainActivity : AppCompatActivity() {
             gson.fromJson(filteredListJson, type)
         } else {
             null
-        }
-    }
-
-    private fun iniciarView() {
-        binding.rvFacturas.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
-            adapterFactura = FacturasAdapter() { factura ->
-                onItemSelected(factura)
-            }
-            adapter = adapterFactura
         }
     }
 
@@ -208,9 +217,11 @@ class MainActivity : AppCompatActivity() {
         }
         return maxImporte
     }
+    /**
+     * Mostrar un diálogo emergente con información sobre la factura seleccionada.
+     */
 
     private fun onItemSelected(factura: Factura) {
-        //popup
         val dialogo = Dialog(this)
         dialogo.setContentView(R.layout.layout_popup)
         dialogo.show()
@@ -219,17 +230,21 @@ class MainActivity : AppCompatActivity() {
         cerrarButton.setOnClickListener {
             dialogo.dismiss()
         }
-
     }
-
+    /**
+     * Configuración del menú.
+     */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_filtro, menu)
         return true
     }
-
+    /**
+     * Configuración del botón para ir a la pantalla de filtros.
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_filtro -> {
+                //Se envia el filtro previo y el importe máximo.
                 val intent = Intent(this, FiltrosActivity::class.java)
                 intent.putExtra(Constantes.MAX_IMPORTE, maxImporte)
                 if (objFiltro != null) {
@@ -239,7 +254,6 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
                 true
             }
-
             else -> super.onOptionsItemSelected(item)
         }
     }

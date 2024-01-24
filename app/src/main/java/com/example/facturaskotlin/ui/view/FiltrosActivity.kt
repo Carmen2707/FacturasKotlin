@@ -15,15 +15,21 @@ import com.example.facturaskotlin.R
 import com.example.facturaskotlin.constantes.Constantes
 import com.example.facturaskotlin.databinding.ActivityFiltrosBinding
 import com.google.gson.Gson
+import java.text.ParseException
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
+/**
+ * La clase FiltrosActivity representa la actividad encargada de gestionar y aplicar los filtros.
+ */
 class FiltrosActivity : AppCompatActivity() {
     private lateinit var binding: ActivityFiltrosBinding
     private lateinit var seekBar: SeekBar
     private lateinit var central: TextView
     private lateinit var botonDesde: Button
     private lateinit var botonHasta: Button
-    private lateinit var botonEliminar: Button
     private lateinit var checkPagadas: CheckBox
     private lateinit var checkAnuladas: CheckBox
     private lateinit var checkCuota: CheckBox
@@ -40,26 +46,32 @@ class FiltrosActivity : AppCompatActivity() {
         //cambiar el titulo de la toolbar
         setSupportActionBar(binding.included.toolbar)
         supportActionBar?.title = getString(R.string.tituloPaginaFiltros)
+
         iniciarComponentes()
         iniciarBotonesFechas()
         iniciarBotonAplicar()
         iniciarSeekbar()
         iniciarBotonEliminarFiltros()
-
-
     }
 
+    /**
+     * Obtiene las shared preferences y convierte el objeto Filtro a formato JSON.
+     * Guarda el estado del filtro y la posición actual de la SeekBar.
+     */
     private fun guardarEstadoFiltro(filtro: Filtro) {
-        val prefs = getPreferences(MODE_PRIVATE)
+        val preferences = getPreferences(MODE_PRIVATE)
         val gson = Gson()
         val filterJson = gson.toJson(filtro)
-
-        prefs.edit().putString("FILTER_STATE", filterJson).putInt("SEEKBAR_PROGRESS", seekBar.progress).apply()
+        preferences.edit().putString("ESTADO_FILTRO", filterJson).apply()
     }
 
+    /**
+     * Obtiene las shared preferences y recupera el estado del filtro guardado.
+     * Si existe un filtro guardado, lo carga.
+     */
     private fun aplicarFiltrosGuardados() {
-        val prefs = getPreferences(MODE_PRIVATE)
-        val filterJson = prefs.getString("FILTER_STATE", null)
+        val preferences = getPreferences(MODE_PRIVATE)
+        val filterJson = preferences.getString("ESTADO_FILTRO", null)
 
         if (filterJson != null) {
             val gson = Gson()
@@ -67,7 +79,6 @@ class FiltrosActivity : AppCompatActivity() {
             filtro?.let { nonNullFilter ->
                 cargarFiltros(nonNullFilter)
             }
-
         }
     }
 
@@ -83,10 +94,8 @@ class FiltrosActivity : AppCompatActivity() {
     }
 
     private fun iniciarComponentes() {
-        botonEliminar = binding.botonEliminar
         seekBar = binding.seekBar
         central = binding.central
-
         botonDesde = binding.fechaDesde
         botonHasta = binding.fechaHasta
         checkPagadas = binding.checkPagadas
@@ -94,7 +103,10 @@ class FiltrosActivity : AppCompatActivity() {
         checkPendientes = binding.checkPendientes
         checkCuota = binding.checkCuota
         checkPlan = binding.checkPlan
+
+        //si hay filtros guardados, los aplica
         aplicarFiltrosGuardados()
+        //cargamos el filtro enviado
         val filtrar = intent.getStringExtra(Constantes.FILTRO_ENVIADO)
         if (filtrar != null) {
             val gson = Gson()
@@ -105,10 +117,9 @@ class FiltrosActivity : AppCompatActivity() {
         }
 
     }
-
+    //botón para resetear los filtros
     private fun iniciarBotonEliminarFiltros() {
-        //boton para resetear los filtros
-        botonEliminar.setOnClickListener {
+        binding.botonEliminar.setOnClickListener {
             botonDesde.text = getString(R.string.diaMesAño)
             botonHasta.text = getString(R.string.diaMesAño)
             central.text = "1€"
@@ -123,10 +134,8 @@ class FiltrosActivity : AppCompatActivity() {
     }
 
     private fun iniciarBotonAplicar() {
-        //boton aplicar
         val gson = Gson()
-        val botonAplicar = binding.botonAplicar
-        botonAplicar.setOnClickListener {
+        binding.botonAplicar.setOnClickListener {
             actualizarFiltros()
             val estado = hashMapOf(
                 Constantes.PAGADAS to checkPagadas.isChecked,
@@ -149,8 +158,10 @@ class FiltrosActivity : AppCompatActivity() {
 
     }
 
+    /**
+     * Actualiza el objeto Filtro con los valores actuales y lo guarda en las shared preferences.
+     */
     private fun actualizarFiltros() {
-
         val estado = hashMapOf(
             Constantes.PAGADAS to checkPagadas.isChecked,
             Constantes.ANULADAS to checkAnuladas.isChecked,
@@ -165,13 +176,10 @@ class FiltrosActivity : AppCompatActivity() {
 
         filtro = Filtro(valorDesde, valorHasta, central, estado)
         guardarEstadoFiltro(filtro!!)
-
     }
 
     private fun iniciarSeekbar() {
-        //iniciar el slider para el importe
          maxImporte = intent.getDoubleExtra(Constantes.MAX_IMPORTE, 0.0).toInt()+1
-Log.d("ff",maxImporte.toString())
 
         aplicarFiltrosGuardados()
         seekBar.max=maxImporte
@@ -183,7 +191,6 @@ Log.d("ff",maxImporte.toString())
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 central.text = getString(R.string.importe_formato, progress)
             }
-
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
                 //metodo vacio
@@ -198,7 +205,6 @@ Log.d("ff",maxImporte.toString())
 
     private fun iniciarBotonesFechas() {
         //iniciar el boton para la fecha desde
-
         binding.fechaDesde.setOnClickListener {
             val c = Calendar.getInstance()
             val year = c.get(Calendar.YEAR)
@@ -214,10 +220,9 @@ Log.d("ff",maxImporte.toString())
                 day
             )
             dpd.show()
-
         }
-        //iniciar el boton para la fecha hasta
 
+        //iniciar el boton para la fecha hasta
         binding.fechaHasta.setOnClickListener {
             val c = Calendar.getInstance()
             val year = c.get(Calendar.YEAR)
@@ -232,20 +237,31 @@ Log.d("ff",maxImporte.toString())
                 month,
                 day
             )
+
+            //controlar que la fecha final sea a partir de la fecha de inicio
+            val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            val fechaBoton = binding.fechaDesde.text.toString()
+            try {
+               val minDate = simpleDateFormat.parse(fechaBoton)!!
+                dpd.datePicker.minDate = minDate.time
+            } catch (e: ParseException) {
+                e.printStackTrace()
+            }
             dpd.show()
-
         }
-
-
     }
 
-    //configuración para el menu
+    /**
+     * Configuración del menú.
+     */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_cerrar, menu)
         return true
     }
 
-    //configuración para el botón de cerrar los filtros
+    /**
+     * Configuración para el botón de cerrar los filtros.
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_cerrar -> {

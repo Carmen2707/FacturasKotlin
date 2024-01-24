@@ -11,23 +11,36 @@ import retrofit2.Callback
 import retrofit2.Response
 import javax.inject.Inject
 
+/**
+ * FacturaRepository se encarga de manejar los datos relacionados con las facturas. Utiliza INJECT para permitir la inyección
+ * de dependencias.
+ */
 class FacturaRepository @Inject constructor(
     private val service: APIService,
     private val facturaDAO: FacturaDAO
 ) {
-
+    /**
+     * Este método devuelve un objeto LiveData con una lista de objetos Factura.
+     */
     fun getAllFromRoom(): LiveData<List<Factura>> {
         return facturaDAO.getAll()
     }
 
+    /**
+     * Este método inserta en la base de datos el objeto pasado como párametro.
+     */
     fun insertInRoom(factura: Factura) {
         facturaDAO.insertAll(factura)
     }
 
+    /**
+     * Este método realiza una llamada a la API para obtener la información de las facturas.
+     */
     fun makeApiCall() {
         val call: Call<FacturaStructureResponse> = service.getFacturas()
 
         call.enqueue(object : Callback<FacturaStructureResponse> {
+            //Se ejecuta si la llamada a la API fue exitosa.
             override fun onResponse(
                 call: Call<FacturaStructureResponse>,
                 response: Response<FacturaStructureResponse>
@@ -43,21 +56,15 @@ class FacturaRepository @Inject constructor(
                             )
                         )
                     }
-                } else {
-                    showError()
                 }
             }
-
+            //Se ejecuta si la llamada a la API falla.
             override fun onFailure(call: Call<FacturaStructureResponse>, t: Throwable) {
-                showError()
+                Log.d("FALLO DE CONEXIÓN", "Se ha producido un problema al intentar establecer la conexión.")
             }
 
 
         })
 
-    }
-
-    fun showError() {
-        Log.d("ERROR", "Ha ocurrido un error al establecer la conexión.")
     }
 }

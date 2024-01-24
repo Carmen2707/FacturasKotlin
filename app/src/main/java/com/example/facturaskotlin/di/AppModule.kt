@@ -16,7 +16,9 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class AppModule {
-
+    /**
+     * Configura la URL y el convertidor Gson.
+     */
     @Provides
     @Singleton
     fun getRetrofit(): Retrofit {
@@ -26,18 +28,27 @@ class AppModule {
             .build()
     }
 
+    /**
+     * Utiliza la instancia de Retrofit para crear una implementación de APIService.
+     */
     @Provides
     @Singleton
     fun getService(retrofit: Retrofit): APIService {
         return retrofit.create(APIService::class.java)
     }
 
+    /**
+     * Utiliza la instancia de FacturaDB para obtener el DAO asociado.
+     */
     @Provides
     @Singleton
     fun getAppDao(facturaDataBase: FacturaDB): FacturaDAO {
         return facturaDataBase.getAppDao()
     }
 
+    /**
+     * Utiliza el método estático getAppDBInstance de FacturaDB para obtener o crear una instancia única de la base de datos.
+     */
     @Provides
     @Singleton
     fun getAppDatabase(@ApplicationContext context: Context): FacturaDB {

@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Facturas</string>
-    <string name="titulo">Facturas</string>
     <string name="tituloPaginaFiltros">Filtrar facturas</string>
     <string name="diaMesAño">dia/mes/año</string>
     <string name="desde">Desde:</string>

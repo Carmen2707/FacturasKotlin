@@ -5,6 +5,9 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
+/**
+ * FacturaDB representa la base de datos de Room.
+ */
 @Database(entities = [Factura::class], version = 1, exportSchema = false)
 abstract class FacturaDB : RoomDatabase() {
     abstract fun getAppDao(): FacturaDAO

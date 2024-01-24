@@ -8,6 +8,9 @@ import com.example.facturaskotlin.R
 import com.example.facturaskotlin.database.Factura
 import com.example.facturaskotlin.databinding.ItemFacturaBinding
 
+/**
+ * Representa la vista de un elemento de factura en el RecyclerView
+ */
 class FacturasViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     private val binding = ItemFacturaBinding.bind(view)
 
