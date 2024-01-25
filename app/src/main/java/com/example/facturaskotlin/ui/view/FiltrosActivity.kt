@@ -3,7 +3,6 @@ package com.example.facturaskotlin.ui.view
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
@@ -18,7 +17,6 @@ import com.google.gson.Gson
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 
 /**
@@ -26,17 +24,12 @@ import java.util.Locale
  */
 class FiltrosActivity : AppCompatActivity() {
     private lateinit var binding: ActivityFiltrosBinding
-    private lateinit var seekBar: SeekBar
     private lateinit var central: TextView
     private lateinit var botonDesde: Button
     private lateinit var botonHasta: Button
-    private lateinit var checkPagadas: CheckBox
-    private lateinit var checkAnuladas: CheckBox
-    private lateinit var checkCuota: CheckBox
-    private lateinit var checkPendientes: CheckBox
-    private lateinit var checkPlan: CheckBox
+
     private var filtro: Filtro? = null
-    private var maxImporte=0
+    private var maxImporte = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -62,7 +55,7 @@ class FiltrosActivity : AppCompatActivity() {
         val preferences = getPreferences(MODE_PRIVATE)
         val gson = Gson()
         val filterJson = gson.toJson(filtro)
-        preferences.edit().putString("ESTADO_FILTRO", filterJson).apply()
+        preferences.edit().putString(Constantes.ESTADO_FILTRO, filterJson).apply()
     }
 
     /**
@@ -71,7 +64,7 @@ class FiltrosActivity : AppCompatActivity() {
      */
     private fun aplicarFiltrosGuardados() {
         val preferences = getPreferences(MODE_PRIVATE)
-        val filterJson = preferences.getString("ESTADO_FILTRO", null)
+        val filterJson = preferences.getString(Constantes.ESTADO_FILTRO, null)
 
         if (filterJson != null) {
             val gson = Gson()
@@ -85,7 +78,7 @@ class FiltrosActivity : AppCompatActivity() {
     private fun cargarFiltros(filtro: Filtro) {
         binding.fechaDesde.text = filtro.fechaDesde
         binding.fechaHasta.text = filtro.fechaHasta
-        binding.seekBar.progress=filtro.importe.toInt()
+        binding.seekBar.progress = filtro.importe.toInt()
         binding.checkPagadas.isChecked = filtro.mapCheckBox[Constantes.PAGADAS] ?: false
         binding.checkAnuladas.isChecked = filtro.mapCheckBox[Constantes.ANULADAS] ?: false
         binding.checkCuota.isChecked = filtro.mapCheckBox[Constantes.CUOTA_FIJA] ?: false
@@ -94,15 +87,10 @@ class FiltrosActivity : AppCompatActivity() {
     }
 
     private fun iniciarComponentes() {
-        seekBar = binding.seekBar
         central = binding.central
         botonDesde = binding.fechaDesde
         botonHasta = binding.fechaHasta
-        checkPagadas = binding.checkPagadas
-        checkAnuladas = binding.checkAnuladas
-        checkPendientes = binding.checkPendientes
-        checkCuota = binding.checkCuota
-        checkPlan = binding.checkPlan
+
 
         //si hay filtros guardados, los aplica
         aplicarFiltrosGuardados()
@@ -117,20 +105,25 @@ class FiltrosActivity : AppCompatActivity() {
         }
 
     }
+
     //botón para resetear los filtros
     private fun iniciarBotonEliminarFiltros() {
         binding.botonEliminar.setOnClickListener {
-            botonDesde.text = getString(R.string.diaMesAño)
-            botonHasta.text = getString(R.string.diaMesAño)
-            central.text = "1€"
-            binding.maximo.text = getString(R.string.importe_formato,seekBar.max)
-            seekBar.progress = 1
-            checkPagadas.isChecked = false
-            checkAnuladas.isChecked = false
-            checkCuota.isChecked = false
-            checkPendientes.isChecked = false
-            checkPlan.isChecked = false
+            resetearFiltros()
         }
+    }
+
+    private fun resetearFiltros() {
+        botonDesde.text = getString(R.string.diaMesAño)
+        botonHasta.text = getString(R.string.diaMesAño)
+        central.text = "1€"
+        binding.maximo.text = getString(R.string.importe_formato, binding.seekBar.max)
+        binding.seekBar.progress = 1
+        binding.checkPagadas.isChecked = false
+        binding.checkAnuladas.isChecked = false
+        binding.checkCuota.isChecked = false
+        binding.checkPendientes.isChecked = false
+        binding.checkPlan.isChecked = false
     }
 
     private fun iniciarBotonAplicar() {
@@ -138,11 +131,11 @@ class FiltrosActivity : AppCompatActivity() {
         binding.botonAplicar.setOnClickListener {
             actualizarFiltros()
             val estado = hashMapOf(
-                Constantes.PAGADAS to checkPagadas.isChecked,
-                Constantes.ANULADAS to checkAnuladas.isChecked,
-                Constantes.CUOTA_FIJA to checkCuota.isChecked,
-                Constantes.PENDIENTE_PAGO to checkPendientes.isChecked,
-                Constantes.PLAN_PAGO to checkPlan.isChecked
+                Constantes.PAGADAS to binding.checkPagadas.isChecked,
+                Constantes.ANULADAS to binding.checkAnuladas.isChecked,
+                Constantes.CUOTA_FIJA to binding.checkCuota.isChecked,
+                Constantes.PENDIENTE_PAGO to binding.checkPendientes.isChecked,
+                Constantes.PLAN_PAGO to binding.checkPlan.isChecked
             )
             val valorDesde = botonDesde.text.toString()
             val valorHasta = botonHasta.text.toString()
@@ -163,11 +156,11 @@ class FiltrosActivity : AppCompatActivity() {
      */
     private fun actualizarFiltros() {
         val estado = hashMapOf(
-            Constantes.PAGADAS to checkPagadas.isChecked,
-            Constantes.ANULADAS to checkAnuladas.isChecked,
-            Constantes.CUOTA_FIJA to checkCuota.isChecked,
-            Constantes.PENDIENTE_PAGO to checkPendientes.isChecked,
-            Constantes.PLAN_PAGO to checkPlan.isChecked
+            Constantes.PAGADAS to binding.checkPagadas.isChecked,
+            Constantes.ANULADAS to binding.checkAnuladas.isChecked,
+            Constantes.CUOTA_FIJA to binding.checkCuota.isChecked,
+            Constantes.PENDIENTE_PAGO to binding.checkPendientes.isChecked,
+            Constantes.PLAN_PAGO to binding.checkPlan.isChecked
         )
         val valorDesde = botonDesde.text.toString()
         val valorHasta = botonHasta.text.toString()
@@ -179,27 +172,26 @@ class FiltrosActivity : AppCompatActivity() {
     }
 
     private fun iniciarSeekbar() {
-         maxImporte = intent.getDoubleExtra(Constantes.MAX_IMPORTE, 0.0).toInt()+1
+        maxImporte = intent.getDoubleExtra(Constantes.MAX_IMPORTE, 0.0).toInt() + 1
 
         aplicarFiltrosGuardados()
-        seekBar.max=maxImporte
-        seekBar.progress = filtro?.importe?.toInt() ?: maxImporte
-        binding.maximo.text = getString(R.string.importe_formato,maxImporte)
-        central.text = getString(R.string.importe_formato, seekBar.progress)
+        binding.seekBar.max = maxImporte
+        binding.seekBar.progress = filtro?.importe?.toInt() ?: maxImporte
+        binding.maximo.text = getString(R.string.importe_formato, maxImporte)
+        central.text = getString(R.string.importe_formato, binding.seekBar.progress)
 
-        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+       binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 central.text = getString(R.string.importe_formato, progress)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                //metodo vacio
+                //método vacío
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                //metodo vacio
+                //método vacío
             }
-
         })
     }
 
@@ -242,7 +234,7 @@ class FiltrosActivity : AppCompatActivity() {
             val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
             val fechaBoton = binding.fechaDesde.text.toString()
             try {
-               val minDate = simpleDateFormat.parse(fechaBoton)!!
+                val minDate = simpleDateFormat.parse(fechaBoton)!!
                 dpd.datePicker.minDate = minDate.time
             } catch (e: ParseException) {
                 e.printStackTrace()

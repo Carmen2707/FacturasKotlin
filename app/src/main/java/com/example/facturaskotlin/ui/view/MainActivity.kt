@@ -2,9 +2,7 @@ package com.example.facturaskotlin.ui.view
 
 import android.app.Dialog
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
@@ -56,9 +54,7 @@ class MainActivity : AppCompatActivity() {
     private fun iniciarView() {
         binding.rvFacturas.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
-            adapterFactura = FacturasAdapter() { factura ->
-                onItemSelected(factura)
-            }
+
             adapter = adapterFactura
         }
     }
@@ -88,12 +84,13 @@ class MainActivity : AppCompatActivity() {
 
             val filtro = intent.getStringExtra(Constantes.FILTRO_ENVIADO)
             if (filtro != null) {
-                objFiltro= Gson().fromJson(filtro, Filtro::class.java)
+                objFiltro = Gson().fromJson(filtro, Filtro::class.java)
                 var listaFiltrada = it
 
                 // Aplica los filtros a la lista actual.
                 objFiltro?.let { filtro1 ->
-                    listaFiltrada = filtrarPorFecha(filtro1.fechaDesde, filtro1.fechaHasta, listaFiltrada)
+                    listaFiltrada =
+                        filtrarPorFecha(filtro1.fechaDesde, filtro1.fechaHasta, listaFiltrada)
                     listaFiltrada = filtrarPorImporte(filtro1.importe, listaFiltrada)
                     listaFiltrada = filtrarPorEstado(filtro1.mapCheckBox, listaFiltrada)
 
@@ -104,22 +101,26 @@ class MainActivity : AppCompatActivity() {
 
                 // Si no hay ninguna factura con las características del filtro (la lista filtrada esta vacía), muestra un diálogo informando al usuario.
                 if (listaFiltrada.isEmpty()) {
-                    val mensaje = Dialog(this)
-                    mensaje.setContentView(R.layout.activity_lista_vacia)
-                    mensaje.show()
-
-                    //boton para cerrar el popup
-                    val cerrarVentana = mensaje.findViewById<Button>(R.id.cerrarVentana)
-                    cerrarVentana.setOnClickListener {
-                        mensaje.dismiss()
-                       val intent = Intent(this, FiltrosActivity::class.java)
-                       intent.putExtra(Constantes.MAX_IMPORTE,maxImporte)
-                        startActivity(intent)
-                    }
+                    mostrarVentanaNoHayFacturas()
                 }
             }
             maxImporte = calcularMaximoImporte(it)
         })
+    }
+
+    private fun mostrarVentanaNoHayFacturas() {
+        val mensaje = Dialog(this)
+        mensaje.setContentView(R.layout.activity_lista_vacia)
+        mensaje.show()
+
+        //boton para cerrar el popup
+        val cerrarVentana = mensaje.findViewById<Button>(R.id.cerrarVentana)
+        cerrarVentana.setOnClickListener {
+            mensaje.dismiss()
+            val intent = Intent(this, FiltrosActivity::class.java)
+            intent.putExtra(Constantes.MAX_IMPORTE, maxImporte)
+            startActivity(intent)
+        }
     }
 
 
@@ -127,12 +128,12 @@ class MainActivity : AppCompatActivity() {
         val gson = Gson()
         val filteredListJson = gson.toJson(listaFiltrada)
         val preferences = getPreferences(MODE_PRIVATE)
-        preferences.edit().putString("LISTA_FILTRADA", filteredListJson).apply()
+        preferences.edit().putString(Constantes.LISTA_FILTRADA, filteredListJson).apply()
     }
 
     private fun obtenerListaGuardada(): List<Factura>? {
-        val preferences= getPreferences(MODE_PRIVATE)
-        val filteredListJson = preferences.getString("LISTA_FILTRADA", null)
+        val preferences = getPreferences(MODE_PRIVATE)
+        val filteredListJson = preferences.getString(Constantes.LISTA_FILTRADA, null)
 
         return if (filteredListJson != null) {
             val gson = Gson()
@@ -208,7 +209,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun calcularMaximoImporte(listaFacturas: List<Factura>): Double {
         var maxImporte = 0.0
-
         for (factura in listaFacturas) {
             val maxFactura = factura.importe
             if (maxImporte < maxFactura) {
@@ -217,6 +217,7 @@ class MainActivity : AppCompatActivity() {
         }
         return maxImporte
     }
+
     /**
      * Mostrar un diálogo emergente con información sobre la factura seleccionada.
      */
@@ -231,6 +232,7 @@ class MainActivity : AppCompatActivity() {
             dialogo.dismiss()
         }
     }
+
     /**
      * Configuración del menú.
      */
@@ -238,6 +240,7 @@ class MainActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.menu_filtro, menu)
         return true
     }
+
     /**
      * Configuración del botón para ir a la pantalla de filtros.
      */
@@ -248,12 +251,13 @@ class MainActivity : AppCompatActivity() {
                 val intent = Intent(this, FiltrosActivity::class.java)
                 intent.putExtra(Constantes.MAX_IMPORTE, maxImporte)
                 if (objFiltro != null) {
-                    val gson=Gson()
+                    val gson = Gson()
                     intent.putExtra(Constantes.FILTRO_ENVIADO, gson.toJson(objFiltro))
                 }
                 startActivity(intent)
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }

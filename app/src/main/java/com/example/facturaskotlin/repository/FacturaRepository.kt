@@ -58,9 +58,13 @@ class FacturaRepository @Inject constructor(
                     }
                 }
             }
+
             //Se ejecuta si la llamada a la API falla.
             override fun onFailure(call: Call<FacturaStructureResponse>, t: Throwable) {
-                Log.d("FALLO DE CONEXIÓN", "Se ha producido un problema al intentar establecer la conexión.")
+                Log.d(
+                    "FALLO DE CONEXIÓN",
+                    "Se ha producido un problema al intentar establecer la conexión."
+                )
             }
 
 
