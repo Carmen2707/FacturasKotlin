@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
-import android.widget.CheckBox
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -180,7 +179,7 @@ class FiltrosActivity : AppCompatActivity() {
         binding.maximo.text = getString(R.string.importe_formato, maxImporte)
         central.text = getString(R.string.importe_formato, binding.seekBar.progress)
 
-       binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 central.text = getString(R.string.importe_formato, progress)
             }

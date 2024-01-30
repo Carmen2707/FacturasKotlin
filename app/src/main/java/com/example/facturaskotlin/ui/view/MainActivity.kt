@@ -3,6 +3,7 @@ package com.example.facturaskotlin.ui.view
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
@@ -39,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        adapterFactura = FacturasAdapter { factura -> onItemSelected(factura) }
+        adapterFactura = FacturasAdapter { onItemSelected() }
 
         //cambiar el titulo de la toolbar
         setSupportActionBar(binding.included.toolbar)
@@ -61,7 +62,7 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Inicializar el ViewModel y observar cambios en la lista de facturas.
-     *     // Aplicar filtros si se proporcionan al iniciar la actividad.
+     * Aplicar filtros si se proporcionan al iniciar la actividad.
      */
     private fun iniciarMainViewModel() {
         val viewModel = ViewModelProvider(this).get(FacturaViewModel::class.java)
@@ -222,7 +223,7 @@ class MainActivity : AppCompatActivity() {
      * Mostrar un diálogo emergente con información sobre la factura seleccionada.
      */
 
-    private fun onItemSelected(factura: Factura) {
+    private fun onItemSelected() {
         val dialogo = Dialog(this)
         dialogo.setContentView(R.layout.layout_popup)
         dialogo.show()
