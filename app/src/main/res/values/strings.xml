@@ -3,11 +3,10 @@
     <string name="app_name">Facturas</string>
     <string name="importe_formato">%d€</string>
     <string name="euro">€</string>
-    <string name="flecha">flecha</string>
 
     <!-- botones página principal -->
-    <string name="botonAplicar">APLICAR</string>
-    <string name="botonEliminar">ELIMINAR FILTROS</string>
+    <string name="FiltroBtnAplicar">APLICAR</string>
+    <string name="FiltroBtnEliminar">ELIMINAR FILTROS</string>
 
     <!-- popups -->
     <string name="tituloPopup">Información</string>
@@ -16,23 +15,23 @@
     <string name="mensajeNoHayFacturas">No hay ninguna factura con estas características.</string>
 
     <!-- página de filtros -->
-    <string name="diaMesAño">dia/mes/año</string>
-    <string name="minimo">0€</string>
+    <string name="FiltroBtnDiaMesAño">dia/mes/año</string>
+    <string name="FiltroValorMinimo">0€</string>
 
     <!-- titulos página de filtros -->
-    <string name="tituloFecha">Con fecha de emisión</string>
-    <string name="tituloEstado">Por estado</string>
-    <string name="tituloImporte">Por un importe</string>
-    <string name="tituloPaginaFiltros">Filtrar facturas</string>
-    <string name="desde">Desde:</string>
-    <string name="hasta">Hasta:</string>
+    <string name="FiltroTituloFecha">Con fecha de emisión</string>
+    <string name="FiltroTituloEstado">Por estado</string>
+    <string name="FiltroTituloImporte">Por un importe</string>
+    <string name="FiltroTituloPaginaFiltros">Filtrar facturas</string>
+    <string name="FiltroTituloDesde">Desde:</string>
+    <string name="FiltroTituloHasta">Hasta:</string>
 
     <!-- checkBoxs -->
-    <string name="checkPendientes">Pendientes de pago</string>
-    <string name="checkPlan">Plan de pago</string>
-    <string name="checkAnuladas">Anuladas</string>
-    <string name="checkCuota">Cuota Fija</string>
-    <string name="checkPagadas">Pagadas</string>
+    <string name="FiltroCheckPendientes">Pendientes de pago</string>
+    <string name="FiltroCheckPlan">Plan de pago</string>
+    <string name="FiltroCheckAnuladas">Anuladas</string>
+    <string name="FiltroCheckCuota">Cuota Fija</string>
+    <string name="FiltroCheckPagadas">Pagadas</string>
 
 
 </resources>

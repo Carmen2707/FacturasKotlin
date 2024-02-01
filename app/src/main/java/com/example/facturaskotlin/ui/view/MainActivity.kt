@@ -10,7 +10,10 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.facturaskotlin.R
 import com.example.facturaskotlin.constantes.Constantes
 import com.example.facturaskotlin.database.Factura
@@ -45,6 +48,11 @@ class MainActivity : AppCompatActivity() {
         //cambiar el titulo de la toolbar
         setSupportActionBar(binding.included.toolbar)
         supportActionBar?.title = getString(R.string.app_name)
+
+        //lineas divisoria para el recyclerview
+        binding.rvFacturas.itemAnimator=DefaultItemAnimator()
+        val decoration=DividerItemDecoration(this,RecyclerView.VERTICAL)
+        binding.rvFacturas.addItemDecoration(decoration)
         iniciarView()
         iniciarMainViewModel()
     }
@@ -187,11 +195,11 @@ class MainActivity : AppCompatActivity() {
         fechaDesde: String,
         fechaHasta: String,
         listaFiltrada: List<Factura>
+
     ): List<Factura> {
         val listaFecha = mutableListOf<Factura>()
-        if (fechaDesde != getString(R.string.diaMesAño) && fechaHasta != getString(R.string.diaMesAño)) {
-            val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-
+        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        if (fechaDesde != getString(R.string.FiltroBtnDiaMesAño) && fechaHasta != getString(R.string.FiltroBtnDiaMesAño)) {
             val fechaMinDate: Date? = sdf.parse(fechaDesde)
             val fechaMaxDate: Date? = sdf.parse(fechaHasta)
 
@@ -201,10 +209,30 @@ class MainActivity : AppCompatActivity() {
                     listaFecha.add(factura)
                 }
             }
-        } else {
+        } else if (fechaDesde != getString(R.string.FiltroBtnDiaMesAño)){
+            // Solo fechaDesde está establecido
+            val fechaMinDate: Date? = sdf.parse(fechaDesde)
+            for (factura in listaFiltrada) {
+                val fecha = sdf.parse(factura.fecha)!!
+                if (fecha.after(fechaMinDate)) {
+                    listaFecha.add(factura)
+                }
+            }
+
+        } else if (fechaHasta != getString(R.string.FiltroBtnDiaMesAño)) {
+            // Solo fechaHasta está establecido
+            val fechaMaxDate: Date? = sdf.parse(fechaHasta)
+
+            for (factura in listaFiltrada) {
+                val fecha = sdf.parse(factura.fecha)!!
+                if (fecha.before(fechaMaxDate)) {
+                    listaFecha.add(factura)
+                }
+            }
+        }else{
+            //si no hay ninguna fecha establecida
             return listaFiltrada
         }
-
         return listaFecha
     }
 

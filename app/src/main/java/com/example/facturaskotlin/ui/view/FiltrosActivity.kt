@@ -37,7 +37,7 @@ class FiltrosActivity : AppCompatActivity() {
 
         //cambiar el titulo de la toolbar
         setSupportActionBar(binding.included.toolbar)
-        supportActionBar?.title = getString(R.string.tituloPaginaFiltros)
+        supportActionBar?.title = getString(R.string.FiltroTituloPaginaFiltros)
 
         iniciarComponentes()
         iniciarBotonesFechas()
@@ -113,8 +113,8 @@ class FiltrosActivity : AppCompatActivity() {
     }
 
     private fun resetearFiltros() {
-        botonDesde.text = getString(R.string.diaMesAño)
-        botonHasta.text = getString(R.string.diaMesAño)
+        botonDesde.text = getString(R.string.FiltroBtnDiaMesAño)
+        botonHasta.text = getString(R.string.FiltroBtnDiaMesAño)
         central.text = "1€"
         binding.maximo.text = getString(R.string.importe_formato, binding.seekBar.max)
         binding.seekBar.progress = 1
