@@ -279,7 +279,7 @@ class FiltrosActivity : AppCompatActivity() {
             R.id.menu_cerrar -> {
                 val intent = Intent(this, MainActivity::class.java)
 
-                startActivity(intent)
+                intentLaunch.launch(intent)
                 finish()
                 true
             }
