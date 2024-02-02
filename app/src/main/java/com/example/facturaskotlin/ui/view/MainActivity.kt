@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -45,11 +46,18 @@ class MainActivity : AppCompatActivity() {
     private var maxImporte: Double = 0.0
     private lateinit var intentLaunch: ActivityResultLauncher<Intent>
 
+    private val onBackInvokedCallback= object : OnBackPressedCallback(true){
+        override fun handleOnBackPressed() {
+            finishAffinity()
+        }
+
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        onBackPressedDispatcher.addCallback(this,onBackInvokedCallback)
         adapterFactura = FacturasAdapter { onItemSelected() }
 
         //cambiar el titulo de la toolbar
@@ -65,11 +73,11 @@ class MainActivity : AppCompatActivity() {
         intentLaunch =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
                 if (result.resultCode == RESULT_OK) {
-                    val maxImporte = result.data?.extras?.getDouble(Constantes.MAX_IMPORTE) ?: 0.0
+                    result.data?.extras?.getDouble(Constantes.MAX_IMPORTE) ?: 0.0
                     val filtroJson = result.data?.extras?.getString(Constantes.FILTRO_ENVIADO)
                     if (filtroJson != null) {
                         val gson = Gson()
-                        val objFiltro = gson.fromJson(filtroJson, Filtro::class.java)
+                        gson.fromJson(filtroJson, Filtro::class.java)
                     }
                 }
             }
@@ -315,10 +323,6 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-   /* override fun onBackPressed() {
-        super.onBackPressed()
-        // Cierra todas las actividades relacionadas con esta
-        finishAffinity()
-    }*/
+
 }
 
