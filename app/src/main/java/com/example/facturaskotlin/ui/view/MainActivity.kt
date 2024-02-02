@@ -67,7 +67,10 @@ class MainActivity : AppCompatActivity() {
                 if (result.resultCode == RESULT_OK) {
                     val maxImporte = result.data?.extras?.getDouble(Constantes.MAX_IMPORTE) ?: 0.0
                     val filtroJson = result.data?.extras?.getString(Constantes.FILTRO_ENVIADO)
-
+                    if (filtroJson != null) {
+                        val gson = Gson()
+                        val objFiltro = gson.fromJson(filtroJson, Filtro::class.java)
+                    }
                 }
             }
 
