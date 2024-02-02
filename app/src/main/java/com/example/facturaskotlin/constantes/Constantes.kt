@@ -19,5 +19,7 @@ class Constantes {
         const val LISTA_FILTRADA: String = "LISTA_FILTRADA"
         const val ESTADO_FILTRO: String = "ESTADO_FILTRO"
 
+
+        const val REQUEST_FILTROS = 1
     }
 }

@@ -3,11 +3,15 @@ package com.example.facturaskotlin.ui.view
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.SeekBar
 import android.widget.TextView
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.facturaskotlin.R
 import com.example.facturaskotlin.constantes.Constantes
@@ -29,6 +33,8 @@ class FiltrosActivity : AppCompatActivity() {
 
     private var filtro: Filtro? = null
     private var maxImporte = 0
+
+    private lateinit var intentLaunch: ActivityResultLauncher<Intent>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -44,7 +50,20 @@ class FiltrosActivity : AppCompatActivity() {
         iniciarBotonAplicar()
         iniciarSeekbar()
         iniciarBotonEliminarFiltros()
+
+        intentLaunch =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+                if (result.resultCode == RESULT_OK) {
+                    val maxImporte = result.data?.extras?.getDouble(Constantes.MAX_IMPORTE) ?: 0.0
+                    val filtroJson = result.data?.extras?.getString(Constantes.FILTRO_ENVIADO)
+                    if (filtroJson != null) {
+                        val gson = Gson()
+                        val objFiltro = gson.fromJson(filtroJson, MainActivity::class.java)
+                    }
+                }
+            }
     }
+
 
     /**
      * Obtiene las shared preferences y convierte el objeto Filtro a formato JSON.
@@ -144,10 +163,10 @@ class FiltrosActivity : AppCompatActivity() {
             val filtroEnviar = Filtro(valorDesde, valorHasta, central, estado)
             val intent = Intent(this, MainActivity::class.java)
             intent.putExtra(Constantes.FILTRO_ENVIADO, gson.toJson(filtroEnviar))
-            startActivity(intent)
 
+            intentLaunch.launch(intent)
+            finish()
         }
-
     }
 
     /**
@@ -257,11 +276,14 @@ class FiltrosActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.menu_cerrar -> {
                 val intent = Intent(this, MainActivity::class.java)
+
                 startActivity(intent)
+                finish()
                 true
             }
 
             else -> super.onOptionsItemSelected(item)
         }
     }
+
 }

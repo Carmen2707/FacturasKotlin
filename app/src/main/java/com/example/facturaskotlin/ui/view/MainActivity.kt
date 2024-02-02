@@ -1,12 +1,18 @@
 package com.example.facturaskotlin.ui.view
 
 import android.app.Dialog
+import android.content.Context.MODE_PRIVATE
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
+
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -27,6 +33,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+
 /**
  * La clase MainActivity es la actividad principal que muestra la lista de facturas.
  */
@@ -36,7 +43,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapterFactura: FacturasAdapter
     private var objFiltro: Filtro? = null
     private var maxImporte: Double = 0.0
-
+    private lateinit var intentLaunch: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,12 +57,25 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.title = getString(R.string.app_name)
 
         //lineas divisoria para el recyclerview
-        binding.rvFacturas.itemAnimator=DefaultItemAnimator()
-        val decoration=DividerItemDecoration(this,RecyclerView.VERTICAL)
+        binding.rvFacturas.itemAnimator = DefaultItemAnimator()
+        val decoration = DividerItemDecoration(this, RecyclerView.VERTICAL)
         binding.rvFacturas.addItemDecoration(decoration)
         iniciarView()
         iniciarMainViewModel()
+        intentLaunch =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+                if (result.resultCode == RESULT_OK) {
+                    val maxImporte = result.data?.extras?.getDouble(Constantes.MAX_IMPORTE) ?: 0.0
+                    val filtroJson = result.data?.extras?.getString(Constantes.FILTRO_ENVIADO)
+                    if (filtroJson != null) {
+                        val gson = Gson()
+                        val objFiltro = gson.fromJson(filtroJson, Filtro::class.java)
+                    }
+                }
+            }
+
     }
+
 
     /**
      * Inicializa la vista del RecyclerView y configura el adaptador.
@@ -79,13 +99,14 @@ class MainActivity : AppCompatActivity() {
 
             // Obtiene la lista de facturas almacenada y actuliza el adaptador.
             val listaFacturas = obtenerListaGuardada()
+            Log.d("listaguardada", listaFacturas.toString())
             if (listaFacturas.isNullOrEmpty()) {
                 adapterFactura.setLista(it)
             } else {
                 adapterFactura.setLista(listaFacturas)
             }
             adapterFactura.notifyDataSetChanged()
-
+            Log.d("AQUI", listaFacturas.toString())
             // Si la lista del ViewModel está vacía, realiza una llamada a la API para obtener nuevas facturas.
             if (it.isEmpty()) {
                 viewModel.makeApiCall()
@@ -128,7 +149,7 @@ class MainActivity : AppCompatActivity() {
             mensaje.dismiss()
             val intent = Intent(this, FiltrosActivity::class.java)
             intent.putExtra(Constantes.MAX_IMPORTE, maxImporte)
-            startActivity(intent)
+            intentLaunch.launch(intent)
         }
     }
 
@@ -209,7 +230,7 @@ class MainActivity : AppCompatActivity() {
                     listaFecha.add(factura)
                 }
             }
-        } else if (fechaDesde != getString(R.string.FiltroBtnDiaMesAño)){
+        } else if (fechaDesde != getString(R.string.FiltroBtnDiaMesAño)) {
             // Solo fechaDesde está establecido
             val fechaMinDate: Date? = sdf.parse(fechaDesde)
             for (factura in listaFiltrada) {
@@ -229,7 +250,7 @@ class MainActivity : AppCompatActivity() {
                     listaFecha.add(factura)
                 }
             }
-        }else{
+        } else {
             //si no hay ninguna fecha establecida
             return listaFiltrada
         }
@@ -283,13 +304,21 @@ class MainActivity : AppCompatActivity() {
                     val gson = Gson()
                     intent.putExtra(Constantes.FILTRO_ENVIADO, gson.toJson(objFiltro))
                 }
-                startActivity(intent)
+
+                intentLaunch.launch(intent)
+
                 true
             }
 
+
             else -> super.onOptionsItemSelected(item)
         }
+
     }
-
-
+   /* override fun onBackPressed() {
+        super.onBackPressed()
+        // Cierra todas las actividades relacionadas con esta
+        finishAffinity()
+    }*/
 }
+
