@@ -3,6 +3,7 @@ package com.example.facturaskotlin.ui.view
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
@@ -56,10 +57,7 @@ class FiltrosActivity : AppCompatActivity() {
                 if (result.resultCode == RESULT_OK) {
                     val maxImporte = result.data?.extras?.getDouble(Constantes.MAX_IMPORTE) ?: 0.0
                     val filtroJson = result.data?.extras?.getString(Constantes.FILTRO_ENVIADO)
-                    if (filtroJson != null) {
-                        val gson = Gson()
-                        val objFiltro = gson.fromJson(filtroJson, MainActivity::class.java)
-                    }
+
                 }
             }
     }
