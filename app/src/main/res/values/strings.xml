@@ -4,7 +4,10 @@
     <string name="importe_formato">%d€</string>
     <string name="euro">€</string>
 
-    <!-- botones página principal -->
+    <!--botón página principal-->
+    <string name="PrincipalBtnActivarRetromock">Activar Retromock</string>
+
+    <!-- botones página filtros -->
     <string name="FiltroBtnAplicar">APLICAR</string>
     <string name="FiltroBtnEliminar">ELIMINAR FILTROS</string>
 

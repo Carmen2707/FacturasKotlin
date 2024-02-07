@@ -28,4 +28,8 @@ class FacturaViewModel @Inject constructor(private val facturaRepository: Factur
         facturaRepository.makeApiCall()
     }
 
+    fun changeService(newDatos: String) {
+        facturaRepository.setDatos(newDatos)
+    }
+
 }

@@ -1,12 +1,9 @@
 package com.example.facturaskotlin.ui.view
 
 import android.app.Dialog
-import android.content.Context.MODE_PRIVATE
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
-
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
@@ -81,9 +78,23 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+        //establecer el estado del switch
+        val switchEstado = cargarEstadoSwitch()
+        binding.switchRetromock.isChecked = switchEstado
 
     }
 
+    // Método para guardar el estado del switch en las SharedPreferences
+    private fun guardarEstadoSwitch(estado: Boolean) {
+        val preferences = getPreferences(MODE_PRIVATE)
+        preferences.edit().putBoolean("switch_estado", estado).apply()
+    }
+
+    // Método para cargar el estado del switch desde las SharedPreferences
+    private fun cargarEstadoSwitch(): Boolean {
+        val preferences = getPreferences(MODE_PRIVATE)
+        return preferences.getBoolean("switch_estado", false) // El segundo parámetro es el valor por defecto
+    }
 
     /**
      * Inicializa la vista del RecyclerView y configura el adaptador.
@@ -101,23 +112,37 @@ class MainActivity : AppCompatActivity() {
      * Aplicar filtros si se proporcionan al iniciar la actividad.
      */
     private fun iniciarMainViewModel() {
+
         val viewModel = ViewModelProvider(this).get(FacturaViewModel::class.java)
         //Cualquier cambio en la lista activará el Observer.
         viewModel.getAllRepositoryList().observe(this, Observer<List<Factura>> {
 
+
             // Obtiene la lista de facturas almacenada y actuliza el adaptador.
             val listaFacturas = obtenerListaGuardada()
-            Log.d("listaguardada", listaFacturas.toString())
             if (listaFacturas.isNullOrEmpty()) {
                 adapterFactura.setLista(it)
             } else {
                 adapterFactura.setLista(listaFacturas)
             }
             adapterFactura.notifyDataSetChanged()
-            Log.d("AQUI", listaFacturas.toString())
             // Si la lista del ViewModel está vacía, realiza una llamada a la API para obtener nuevas facturas.
             if (it.isEmpty()) {
                 viewModel.makeApiCall()
+
+            }
+            //lógica del switch para activar el retromock
+            binding.switchRetromock.setOnClickListener {
+                val isChecked = binding.switchRetromock.isChecked
+                guardarEstadoSwitch(isChecked)
+                if (binding.switchRetromock.isChecked) {
+                    viewModel.changeService("ficticio")
+                    viewModel.makeApiCall()
+                }else{
+                    viewModel.changeService("real")
+                    viewModel.makeApiCall()
+                }
+
             }
 
             val filtro = intent.getStringExtra(Constantes.FILTRO_ENVIADO)

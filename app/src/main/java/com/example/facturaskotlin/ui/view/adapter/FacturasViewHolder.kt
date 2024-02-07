@@ -5,6 +5,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.facturaskotlin.R
+import com.example.facturaskotlin.constantes.Constantes
 import com.example.facturaskotlin.database.Factura
 import com.example.facturaskotlin.databinding.ItemFacturaBinding
 import java.text.ParseException
@@ -25,14 +26,14 @@ class FacturasViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             onClickListener(item)
         }
         //configuración del color del texto según su estado
-        val estadoColor = when (binding.tvEstado.text) {
-            "Pendiente de pago" -> ContextCompat.getColor(itemView.context, R.color.red)
-            "Pagada" -> ContextCompat.getColor(itemView.context, R.color.green_pagada)
-            else -> {
-                ContextCompat.getColor(itemView.context, R.color.black)
-            }
+        if (binding.tvEstado.text == Constantes.PENDIENTE_PAGO){
+            val estadoColor = ContextCompat.getColor(itemView.context, R.color.red)
+            binding.tvEstado.setTextColor(estadoColor)
+        }else{
+            binding.tvEstado.text=""
         }
-        binding.tvEstado.setTextColor(estadoColor)
+
+
     }
 
     private fun formatearFecha(fechaString: String): String {

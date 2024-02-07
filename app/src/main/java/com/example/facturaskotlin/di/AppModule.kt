@@ -1,8 +1,12 @@
 package com.example.facturaskotlin.di
 
 import android.content.Context
+import co.infinum.retromock.Retromock
+import com.example.facturaskotlin.ResourceBodyFactory
 import com.example.facturaskotlin.database.FacturaDAO
 import com.example.facturaskotlin.database.FacturaDB
+import com.example.facturaskotlin.network.APIRetrofitService
+import com.example.facturaskotlin.network.APIRetromockService
 import com.example.facturaskotlin.network.APIService
 import dagger.Module
 import dagger.Provides
@@ -16,25 +20,39 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class AppModule {
-    /**
-     * Configura la URL y el convertidor Gson.
-     */
+
     @Provides
     @Singleton
-    fun getRetrofit(): Retrofit {
+    fun getRetrofit(retrofit: Retrofit): APIRetrofitService {
+        return retrofit.create(APIRetrofitService::class.java)
+
+    }
+
+    @Provides
+    @Singleton
+    fun getRetromock(retromock: Retromock): APIRetromockService {
+        return retromock.create(APIRetromockService::class.java)
+
+    }
+
+    @Provides
+    @Singleton
+    fun buildRetrofit(): Retrofit {
         return Retrofit.Builder()
             .baseUrl("https://viewnextandroid.wiremockapi.cloud/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+
     }
 
-    /**
-     * Utiliza la instancia de Retrofit para crear una implementación de APIService.
-     */
     @Provides
     @Singleton
-    fun getService(retrofit: Retrofit): APIService {
-        return retrofit.create(APIService::class.java)
+    fun buildRetromock(retrofit: Retrofit): Retromock {
+        return Retromock.Builder()
+            .retrofit(retrofit)
+            .defaultBodyFactory(ResourceBodyFactory())
+            .build()
+
     }
 
     /**

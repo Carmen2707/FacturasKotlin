@@ -4,8 +4,11 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import com.example.facturaskotlin.database.Factura
 import com.example.facturaskotlin.database.FacturaDAO
+import com.example.facturaskotlin.network.APIRetrofitService
+import com.example.facturaskotlin.network.APIRetromockService
 import com.example.facturaskotlin.network.APIService
 import com.example.facturaskotlin.network.model.FacturaStructureResponse
+import dagger.Provides
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -16,9 +19,30 @@ import javax.inject.Inject
  * de dependencias.
  */
 class FacturaRepository @Inject constructor(
-    private val service: APIService,
+    private var retrofitService: APIRetrofitService,
+    private var retromockService: APIRetromockService,
     private val facturaDAO: FacturaDAO
 ) {
+
+    private lateinit var service: APIService
+    private var datos = "ficticio"
+
+    fun setDatos(newDatos: String) {
+        datos = newDatos
+        decideService()
+    }
+    init {
+    decideService()
+    }
+
+    fun decideService() {
+        if (datos == "ficticio") {
+            service = retromockService
+        } else {
+            service = retrofitService
+        }
+    }
+
     /**
      * Este método devuelve un objeto LiveData con una lista de objetos Factura.
      */
@@ -71,4 +95,6 @@ class FacturaRepository @Inject constructor(
         })
 
     }
+
+
 }

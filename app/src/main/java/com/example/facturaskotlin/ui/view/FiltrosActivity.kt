@@ -3,8 +3,6 @@ package com.example.facturaskotlin.ui.view
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
@@ -252,13 +250,20 @@ class FiltrosActivity : AppCompatActivity() {
 
             //controlar que la fecha final sea a partir de la fecha de inicio
             val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-            val fechaBoton = binding.fechaDesde.text.toString()
-            try {
-                val minDate = simpleDateFormat.parse(fechaBoton)!!
+            val fechaBotonDesde = binding.fechaDesde.text.toString()
+            val fechaBotonHasta = binding.fechaHasta.text.toString()
+//TODO ARREGLAR LA RESTRICCION PARA LA FECHA HASTA
+          /*  if (binding.fechaHasta.text != getText(R.string.FiltroBtnDiaMesAño)) {
+                val maxDate = simpleDateFormat.parse(fechaBotonHasta)!!
+                dpd.datePicker.maxDate=maxDate.time
+            }*/
+
+            if (binding.fechaDesde.text != getText(R.string.FiltroBtnDiaMesAño)) {
+
+                val minDate = simpleDateFormat.parse(fechaBotonDesde)!!
                 dpd.datePicker.minDate = minDate.time
-            } catch (e: ParseException) {
-                e.printStackTrace()
             }
+
             dpd.show()
         }
     }
