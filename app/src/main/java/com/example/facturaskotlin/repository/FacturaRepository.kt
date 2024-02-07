@@ -8,7 +8,6 @@ import com.example.facturaskotlin.network.APIRetrofitService
 import com.example.facturaskotlin.network.APIRetromockService
 import com.example.facturaskotlin.network.APIService
 import com.example.facturaskotlin.network.model.FacturaStructureResponse
-import dagger.Provides
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -31,8 +30,9 @@ class FacturaRepository @Inject constructor(
         datos = newDatos
         decideService()
     }
+
     init {
-    decideService()
+        decideService()
     }
 
     fun decideService() {

@@ -19,18 +19,18 @@ class FacturasViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     private val binding = ItemFacturaBinding.bind(view)
 
     fun render(item: Factura, onClickListener: (Factura) -> Unit) {
-        binding.tvFecha.text = item.fecha.let{formatearFecha(it)}
+        binding.tvFecha.text = item.fecha.let { formatearFecha(it) }
         binding.tvEstado.text = item.estado
         binding.tvPrecio.text = item.importe.toString()
         itemView.setOnClickListener {
             onClickListener(item)
         }
         //configuración del color del texto según su estado
-        if (binding.tvEstado.text == Constantes.PENDIENTE_PAGO){
+        if (binding.tvEstado.text == Constantes.PENDIENTE_PAGO) {
             val estadoColor = ContextCompat.getColor(itemView.context, R.color.red)
             binding.tvEstado.setTextColor(estadoColor)
-        }else{
-            binding.tvEstado.text=""
+        } else {
+            binding.tvEstado.text = ""
         }
 
 

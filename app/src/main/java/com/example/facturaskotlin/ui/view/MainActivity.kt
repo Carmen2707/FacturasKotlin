@@ -3,7 +3,6 @@ package com.example.facturaskotlin.ui.view
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
@@ -43,18 +42,19 @@ class MainActivity : AppCompatActivity() {
     private var maxImporte: Double = 0.0
     private lateinit var intentLaunch: ActivityResultLauncher<Intent>
 
-    private val onBackInvokedCallback= object : OnBackPressedCallback(true){
+    private val onBackInvokedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             finishAffinity()
         }
 
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        onBackPressedDispatcher.addCallback(this,onBackInvokedCallback)
+        onBackPressedDispatcher.addCallback(this, onBackInvokedCallback)
         adapterFactura = FacturasAdapter { onItemSelected() }
 
         //cambiar el titulo de la toolbar
@@ -93,7 +93,10 @@ class MainActivity : AppCompatActivity() {
     // Método para cargar el estado del switch desde las SharedPreferences
     private fun cargarEstadoSwitch(): Boolean {
         val preferences = getPreferences(MODE_PRIVATE)
-        return preferences.getBoolean("switch_estado", false) // El segundo parámetro es el valor por defecto
+        return preferences.getBoolean(
+            "switch_estado",
+            false
+        ) // El segundo parámetro es el valor por defecto
     }
 
     /**
@@ -138,7 +141,7 @@ class MainActivity : AppCompatActivity() {
                 if (binding.switchRetromock.isChecked) {
                     viewModel.changeService("ficticio")
                     viewModel.makeApiCall()
-                }else{
+                } else {
                     viewModel.changeService("real")
                     viewModel.makeApiCall()
                 }

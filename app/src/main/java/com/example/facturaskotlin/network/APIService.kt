@@ -11,7 +11,7 @@ import retrofit2.http.GET
 /**
  * Interfaz que se comunica con la API mediante Retrofit. Utiliza una solicitud GET.
  */
-interface APIRetromockService: APIService {
+interface APIRetromockService : APIService {
     @Mock
     @MockResponses(
         MockResponse(body = "mock.json"),
@@ -23,7 +23,7 @@ interface APIRetromockService: APIService {
     override fun getFacturas(): Call<FacturaStructureResponse>
 }
 
-interface APIRetrofitService: APIService {
+interface APIRetrofitService : APIService {
     @GET("facturas")
     override fun getFacturas(): Call<FacturaStructureResponse>
 }

@@ -16,7 +16,6 @@ import com.example.facturaskotlin.R
 import com.example.facturaskotlin.constantes.Constantes
 import com.example.facturaskotlin.databinding.ActivityFiltrosBinding
 import com.google.gson.Gson
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -253,10 +252,10 @@ class FiltrosActivity : AppCompatActivity() {
             val fechaBotonDesde = binding.fechaDesde.text.toString()
             val fechaBotonHasta = binding.fechaHasta.text.toString()
 //TODO ARREGLAR LA RESTRICCION PARA LA FECHA HASTA
-          /*  if (binding.fechaHasta.text != getText(R.string.FiltroBtnDiaMesAño)) {
-                val maxDate = simpleDateFormat.parse(fechaBotonHasta)!!
-                dpd.datePicker.maxDate=maxDate.time
-            }*/
+            /*  if (binding.fechaHasta.text != getText(R.string.FiltroBtnDiaMesAño)) {
+                  val maxDate = simpleDateFormat.parse(fechaBotonHasta)!!
+                  dpd.datePicker.maxDate=maxDate.time
+              }*/
 
             if (binding.fechaDesde.text != getText(R.string.FiltroBtnDiaMesAño)) {
 
