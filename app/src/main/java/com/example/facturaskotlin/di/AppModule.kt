@@ -15,11 +15,15 @@ import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
-
+/**
+ * Módulo de Dagger que proporciona las dependencias necesarias para la inyección de dependencias mediante Hilt.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 class AppModule {
-
+    /**
+     * Este método devuelve una instancia de APIRetrofitService creada a partir de Retrofit.
+     */
     @Provides
     @Singleton
     fun getRetrofit(retrofit: Retrofit): APIRetrofitService {
@@ -27,6 +31,9 @@ class AppModule {
 
     }
 
+    /**
+     * Este método devuelve una instancia de APIRetromockService creada a partir de Retromock.
+     */
     @Provides
     @Singleton
     fun getRetromock(retromock: Retromock): APIRetromockService {
@@ -34,6 +41,9 @@ class AppModule {
 
     }
 
+    /**
+     * Este método construye una instancia de Retrofit con la urlBase y el convertidor Gson.
+     */
     @Provides
     @Singleton
     fun buildRetrofit(): Retrofit {
@@ -44,6 +54,9 @@ class AppModule {
 
     }
 
+    /**
+     * Este método construye una instancia de Retromock con la instancia de Retrofit.
+     */
     @Provides
     @Singleton
     fun buildRetromock(retrofit: Retrofit): Retromock {

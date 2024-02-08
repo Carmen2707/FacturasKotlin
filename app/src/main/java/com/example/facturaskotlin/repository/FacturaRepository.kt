@@ -22,10 +22,24 @@ class FacturaRepository @Inject constructor(
     private var retromockService: APIRetromockService,
     private val facturaDAO: FacturaDAO
 ) {
-
+//utilizamos esta variable 'service' para determinar qué servicio de API utilizar según el valor de la variable 'datos',
     private lateinit var service: APIService
     private var datos = "ficticio"
 
+    /**
+     * Este método determina que servicio de API se utilizará basándose en el valor de la variable datos y lo asigna a la variable service.
+     */
+    private fun decideService() {
+        if (datos == "ficticio") {
+            service = retromockService
+        } else { //datos="real"
+            service = retrofitService
+        }
+    }
+
+    /**
+     * Este método permite cambiar el valor de 'datos'.
+     */
     fun setDatos(newDatos: String) {
         datos = newDatos
         decideService()
@@ -35,13 +49,7 @@ class FacturaRepository @Inject constructor(
         decideService()
     }
 
-    fun decideService() {
-        if (datos == "ficticio") {
-            service = retromockService
-        } else {
-            service = retrofitService
-        }
-    }
+
 
     /**
      * Este método devuelve un objeto LiveData con una lista de objetos Factura.

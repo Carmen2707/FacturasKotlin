@@ -36,12 +36,15 @@ class FacturasViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     }
 
+    /**
+     * Este método cambia la fecha de formato fecha a formato español.
+     */
     private fun formatearFecha(fechaString: String): String {
         try {
             val formatoEntrada = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
             val fecha = formatoEntrada.parse(fechaString)
 
-            // Formateo la fecha a "dd MMM yyyy" en español
+
             val formatoSalida = SimpleDateFormat(
                 "dd MMM yyyy", Locale(
                     "es",
@@ -51,7 +54,7 @@ class FacturasViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             return formatoSalida.format(fecha!!)
         } catch (e: ParseException) {
             e.printStackTrace()
-            return fechaString // Devuelve la fecha original en caso de error
+            return fechaString
         }
     }
 }

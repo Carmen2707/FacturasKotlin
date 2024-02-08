@@ -1,4 +1,8 @@
 {
-  "numFacturas": 0,
-  "facturas": []
+  "numFacturas": 1,
+  "facturas": [ {
+    "descEstado": "Pendiente de pago",
+    "importeOrdenacion": 7,
+    "fecha": "07/01/2024"
+  }]
 }

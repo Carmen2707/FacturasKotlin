@@ -28,6 +28,9 @@ class FacturaViewModel @Inject constructor(private val facturaRepository: Factur
         facturaRepository.makeApiCall()
     }
 
+    /**
+     * Método que llama al método setDatos() del repositorio para cambiar el origen de los datos(ficticios o reales) según el parámetro proporcionado (newDatos).
+     */
     fun changeService(newDatos: String) {
         facturaRepository.setDatos(newDatos)
     }

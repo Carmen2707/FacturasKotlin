@@ -109,7 +109,6 @@ class FiltrosActivity : AppCompatActivity() {
         botonDesde = binding.fechaDesde
         botonHasta = binding.fechaHasta
 
-
         //si hay filtros guardados, los aplica
         aplicarFiltrosGuardados()
         //cargamos el filtro enviado

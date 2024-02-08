@@ -42,6 +42,9 @@ class MainActivity : AppCompatActivity() {
     private var maxImporte: Double = 0.0
     private lateinit var intentLaunch: ActivityResultLauncher<Intent>
 
+    /**
+     * Callback que gestiona el eventro del botón 'atrás' del dispositivo. Cierra la app cuando se llama.
+     */
     private val onBackInvokedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             finishAffinity()
@@ -53,9 +56,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        adapterFactura = FacturasAdapter { onItemSelected() }
 
         onBackPressedDispatcher.addCallback(this, onBackInvokedCallback)
-        adapterFactura = FacturasAdapter { onItemSelected() }
 
         //cambiar el titulo de la toolbar
         setSupportActionBar(binding.included.toolbar)
@@ -65,8 +68,10 @@ class MainActivity : AppCompatActivity() {
         binding.rvFacturas.itemAnimator = DefaultItemAnimator()
         val decoration = DividerItemDecoration(this, RecyclerView.VERTICAL)
         binding.rvFacturas.addItemDecoration(decoration)
+
         iniciarView()
         iniciarMainViewModel()
+
         intentLaunch =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
                 if (result.resultCode == RESULT_OK) {
@@ -81,16 +86,19 @@ class MainActivity : AppCompatActivity() {
         //establecer el estado del switch
         val switchEstado = cargarEstadoSwitch()
         binding.switchRetromock.isChecked = switchEstado
-
     }
 
-    // Método para guardar el estado del switch en las SharedPreferences
+    /**
+     * Método para guardar el estado del switch en las SharedPreferences.
+     */
     private fun guardarEstadoSwitch(estado: Boolean) {
         val preferences = getPreferences(MODE_PRIVATE)
         preferences.edit().putBoolean("switch_estado", estado).apply()
     }
 
-    // Método para cargar el estado del switch desde las SharedPreferences
+    /**
+     * Método para cargar el estado del switch desde las SharedPreferences.
+     */
     private fun cargarEstadoSwitch(): Boolean {
         val preferences = getPreferences(MODE_PRIVATE)
         return preferences.getBoolean(
@@ -115,7 +123,6 @@ class MainActivity : AppCompatActivity() {
      * Aplicar filtros si se proporcionan al iniciar la actividad.
      */
     private fun iniciarMainViewModel() {
-
         val viewModel = ViewModelProvider(this).get(FacturaViewModel::class.java)
         //Cualquier cambio en la lista activará el Observer.
         viewModel.getAllRepositoryList().observe(this, Observer<List<Factura>> {
@@ -134,7 +141,7 @@ class MainActivity : AppCompatActivity() {
                 viewModel.makeApiCall()
 
             }
-            //lógica del switch para activar el retromock
+            // Lógica del switch para activar el retromock.
             binding.switchRetromock.setOnClickListener {
                 val isChecked = binding.switchRetromock.isChecked
                 guardarEstadoSwitch(isChecked)
@@ -160,7 +167,7 @@ class MainActivity : AppCompatActivity() {
                     listaFiltrada = filtrarPorImporte(filtro1.importe, listaFiltrada)
                     listaFiltrada = filtrarPorEstado(filtro1.mapCheckBox, listaFiltrada)
 
-                    //Guarda la lista filtrada en las shared preferences.
+                    //Guarda la lista filtrada en las SharedPreferences.
                     guardarFiltro(listaFiltrada)
                     adapterFactura.setLista(listaFiltrada)
                 }
