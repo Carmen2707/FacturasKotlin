@@ -19,6 +19,7 @@ import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import kotlin.math.max
 
 /**
  * La clase FiltrosActivity representa la actividad encargada de gestionar y aplicar los filtros.
@@ -215,58 +216,50 @@ class FiltrosActivity : AppCompatActivity() {
     private fun iniciarBotonesFechas() {
         //iniciar el boton para la fecha desde
         binding.fechaDesde.setOnClickListener {
-            val c = Calendar.getInstance()
-            val year = c.get(Calendar.YEAR)
-            val month = c.get(Calendar.MONTH)
-            val day = c.get(Calendar.DAY_OF_MONTH)
-            val dpd = DatePickerDialog(
-                this,
-                { _, year1, monthOfYear, dayOfMonth ->
-                    "$dayOfMonth/${monthOfYear + 1}/$year1".also { botonDesde.text = it }
-                },
-                year,
-                month,
-                day
-            )
-            dpd.show()
+            obtenerFechas(binding.fechaDesde)
         }
 
         //iniciar el boton para la fecha hasta
         binding.fechaHasta.setOnClickListener {
-            val c = Calendar.getInstance()
-            val year = c.get(Calendar.YEAR)
-            val month = c.get(Calendar.MONTH)
-            val day = c.get(Calendar.DAY_OF_MONTH)
-            val dpd = DatePickerDialog(
-                this,
-                { _, year1, monthOfYear, dayOfMonth ->
-                    "$dayOfMonth/${monthOfYear + 1}/$year1".also { botonHasta.text = it }
-                },
-                year,
-                month,
-                day
-            )
-
-            //controlar que la fecha final sea a partir de la fecha de inicio
-            val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-            val fechaBotonDesde = binding.fechaDesde.text.toString()
-            val fechaBotonHasta = binding.fechaHasta.text.toString()
-//TODO ARREGLAR LA RESTRICCION PARA LA FECHA HASTA
-            /*  if (binding.fechaHasta.text != getText(R.string.FiltroBtnDiaMesAño)) {
-                  val maxDate = simpleDateFormat.parse(fechaBotonHasta)!!
-                  dpd.datePicker.maxDate=maxDate.time
-              }*/
-
-            if (binding.fechaDesde.text != getText(R.string.FiltroBtnDiaMesAño)) {
-
-                val minDate = simpleDateFormat.parse(fechaBotonDesde)!!
-                dpd.datePicker.minDate = minDate.time
-            }
-
-            dpd.show()
+            obtenerFechas(binding.fechaHasta)
         }
     }
+//método para obtener las fechas seleccionadas
+    private fun obtenerFechas(boton:Button){
+    val c = Calendar.getInstance()
+    val year = c.get(Calendar.YEAR)
+    val month = c.get(Calendar.MONTH)
+    val day = c.get(Calendar.DAY_OF_MONTH)
+    val dpd = DatePickerDialog(
+        this,
+        { _, year1, monthOfYear, dayOfMonth ->
+            "$dayOfMonth/${monthOfYear + 1}/$year1".also { boton.text = it }
+        },
+        year,
+        month,
+        day
+    )
 
+
+    val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val fechaBotonDesde = binding.fechaDesde.text.toString()
+    val fechaBotonHasta = binding.fechaHasta.text.toString()
+
+   //controlar que la fecha de inicio no te deje elegir fechas después de la fecha final seleccionada
+    if (binding.fechaHasta.text != getText(R.string.FiltroBtnDiaMesAño)) {
+         val maxDate = simpleDateFormat.parse(fechaBotonHasta)!!
+         dpd.datePicker.maxDate = maxDate.time
+    }
+    //controlar que la fecha final sea a partir de la fecha de inicio
+    if (binding.fechaDesde.text != getText(R.string.FiltroBtnDiaMesAño)) {
+        val minDate = simpleDateFormat.parse(fechaBotonDesde)!!
+        dpd.datePicker.minDate = minDate.time
+    }
+
+    dpd.show()
+
+
+}
     /**
      * Configuración del menú.
      */
