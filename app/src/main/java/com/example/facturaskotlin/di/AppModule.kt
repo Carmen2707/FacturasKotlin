@@ -2,11 +2,11 @@ package com.example.facturaskotlin.di
 
 import android.content.Context
 import co.infinum.retromock.Retromock
-import com.example.facturaskotlin.ResourceBodyFactory
 import com.example.facturaskotlin.database.FacturaDAO
 import com.example.facturaskotlin.database.FacturaDB
 import com.example.facturaskotlin.network.APIRetrofitService
 import com.example.facturaskotlin.network.APIRetromockService
+import com.example.facturaskotlin.retromock.ResourceBodyFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,6 +15,7 @@ import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
+
 /**
  * Módulo de Dagger que proporciona las dependencias necesarias para la inyección de dependencias mediante Hilt.
  */

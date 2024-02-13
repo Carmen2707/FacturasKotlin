@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity() {
         return preferences.getBoolean(
             "switch_estado",
             false
-        ) // El segundo parámetro es el valor por defecto
+        )
     }
 
     /**
@@ -113,7 +113,6 @@ class MainActivity : AppCompatActivity() {
     private fun iniciarView() {
         binding.rvFacturas.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
-
             adapter = adapterFactura
         }
     }
@@ -126,7 +125,6 @@ class MainActivity : AppCompatActivity() {
         val viewModel = ViewModelProvider(this).get(FacturaViewModel::class.java)
         //Cualquier cambio en la lista activará el Observer.
         viewModel.getAllRepositoryList().observe(this, Observer<List<Factura>> {
-
 
             // Obtiene la lista de facturas almacenada y actuliza el adaptador.
             val listaFacturas = obtenerListaGuardada()
@@ -162,8 +160,7 @@ class MainActivity : AppCompatActivity() {
 
                 // Aplica los filtros a la lista actual.
                 objFiltro?.let { filtro1 ->
-                    listaFiltrada =
-                        filtrarPorFecha(filtro1.fechaDesde, filtro1.fechaHasta, listaFiltrada)
+                    listaFiltrada = filtrarPorFecha(filtro1.fechaDesde, filtro1.fechaHasta, listaFiltrada)
                     listaFiltrada = filtrarPorImporte(filtro1.importe, listaFiltrada)
                     listaFiltrada = filtrarPorEstado(filtro1.mapCheckBox, listaFiltrada)
 
@@ -186,7 +183,7 @@ class MainActivity : AppCompatActivity() {
         mensaje.setContentView(R.layout.activity_lista_vacia)
         mensaje.show()
 
-        //boton para cerrar el popup
+        //botón para cerrar el popup
         val cerrarVentana = mensaje.findViewById<Button>(R.id.cerrarVentana)
         cerrarVentana.setOnClickListener {
             mensaje.dismiss()
